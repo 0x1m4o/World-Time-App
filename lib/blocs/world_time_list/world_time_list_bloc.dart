@@ -14,7 +14,8 @@ class WorldTimeListBloc extends Bloc<WorlTimeListEvent, WorldTimeListState> {
       final apiUrl =
           Uri.parse('https://timeapi.io/api/TimeZone/AvailableTimeZones');
 
-      final response = await http.get(apiUrl);
+      final response = await http.get(apiUrl,
+          headers: {"Content-Type": "application/x-www-form-urlencoded"});
       print('Response ${response.statusCode}');
       if (response.statusCode == 200) {
         List<dynamic> timeData = json.decode(response.body);

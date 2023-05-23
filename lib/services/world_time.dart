@@ -16,7 +16,8 @@ class WorldTime {
         Uri.parse('https://timeapi.io/api/Time/current/zone?timeZone=$url');
 
     try {
-      var response = await http.get(apiUrl);
+      var response = await http.get(apiUrl,
+          headers: {"Content-Type": "application/x-www-form-urlencoded"});
       var data = json.decode(response.body);
       print(data);
       print(response.statusCode);
