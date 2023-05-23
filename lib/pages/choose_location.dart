@@ -1,8 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:http/http.dart' as http;
+import 'package:world_time/blocs/search_filter/search_filter_bloc.dart';
+import 'package:world_time/blocs/world_time_list/world_time_list_bloc.dart';
 import 'package:world_time/services/world_time.dart';
 
 class ChooseLocation extends StatefulWidget {
@@ -11,13 +11,12 @@ class ChooseLocation extends StatefulWidget {
 }
 
 class _ChooseLocationState extends State<ChooseLocation> {
-  List<String> timeZones = [];
-  var items = <String>[];
+  // List<dynamic> items = [];
   TextEditingController editingController = TextEditingController();
 
   @override
   void initState() {
-    getWorld();
+    context.read<WorldTimeListBloc>().add(FetchWorldTimeList());
     super.initState();
   }
 
@@ -40,30 +39,24 @@ class _ChooseLocationState extends State<ChooseLocation> {
     });
   }
 
-  Future<void> getWorld() async {
-    final apiUrl =
-        Uri.parse('https://timeapi.io/api/TimeZone/AvailableTimeZones');
-    final response = await http.get(apiUrl);
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      setState(() {
-        timeZones = data.cast<String>();
-      });
-    } else {
-      throw Exception('Unexpected error occured!');
-    }
-  }
-
-  void filterSearchResults(String query) {
-    setState(() {
-      items = timeZones
-          .where((item) => item.toLowerCase().contains(query.toLowerCase()))
-          .toList();
-    });
-  }
+  // void filterSearchResults(String query) {
+  //   setState(() {
+  //     items = context
+  //         .read<WorldTimeListBloc>()
+  //         .state
+  //         .timeData
+  //         .where((item) => item.toLowerCase().contains(query.toLowerCase()))
+  //         .toList();
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
+    var searchfilter = context.watch<SearchFilterBloc>();
+    List<dynamic> timezones = context.watch<WorldTimeListBloc>().state.timeData;
+    List<dynamic> filteredTimeZones =
+        context.watch<SearchFilterBloc>().state.filteredTodo;
+
     return Scaffold(
         backgroundColor: Colors.grey[200],
         appBar: AppBar(
@@ -72,7 +65,7 @@ class _ChooseLocationState extends State<ChooseLocation> {
           centerTitle: true,
           elevation: 0,
         ),
-        body: timeZones.isEmpty
+        body: timezones.isEmpty
             ? Center(
                 child: SpinKitFadingFour(
                   color: Colors.black,
@@ -81,12 +74,76 @@ class _ChooseLocationState extends State<ChooseLocation> {
               )
             : Column(
                 children: [
+                  DropdownButton(
+                    alignment: Alignment.center,
+                    value: (searchfilter.state.filter == Filter.all)
+                        ? 'all'
+                        : (searchfilter.state.filter == Filter.africa)
+                            ? 'africa'
+                            : (searchfilter.state.filter == Filter.america)
+                                ? 'america'
+                                : (searchfilter.state.filter ==
+                                        Filter.antartica)
+                                    ? 'antartica'
+                                    : (searchfilter.state.filter == Filter.asia)
+                                        ? 'asia'
+                                        : (searchfilter.state.filter ==
+                                                Filter.australia)
+                                            ? 'australia'
+                                            : 'europe',
+                    // Step 4.
+                    items: [
+                      'all',
+                      'asia',
+                      'africa',
+                      'america',
+                      'antartica',
+                      'australia',
+                      'europe'
+                    ].map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(
+                          value,
+                          style: TextStyle(fontSize: 30),
+                        ),
+                      );
+                    }).toList(),
+
+                    // Step 5.
+                    onChanged: (value) {
+                      Filter filter;
+                      if (value == 'all') {
+                        filter = Filter.all;
+                      } else if (value == 'africa') {
+                        filter = Filter.africa;
+                      } else if (value == 'america') {
+                        filter = Filter.america;
+                      } else if (value == 'antartica') {
+                        filter = Filter.antartica;
+                      } else if (value == 'asia') {
+                        filter = Filter.asia;
+                      } else if (value == 'australia') {
+                        filter = Filter.australia;
+                      } else {
+                        filter = Filter.europe;
+                      }
+
+                      searchfilter.state.filter = filter;
+                      context.read<SearchFilterBloc>().setFilterAndSearch(
+                          searchfilter.state.filter, editingController.text);
+                    },
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextField(
                       controller: editingController,
                       onChanged: (value) {
-                        filterSearchResults(value);
+                        if (editingController.text.isNotEmpty) {
+                          context.read<SearchFilterBloc>().setFilterAndSearch(
+                              searchfilter.state.filter,
+                              editingController.text);
+                        }
                       },
                       decoration: InputDecoration(
                           labelText: "Search",
@@ -99,9 +156,7 @@ class _ChooseLocationState extends State<ChooseLocation> {
                   ),
                   Expanded(
                     child: ListView.builder(
-                        itemCount: editingController.text.isNotEmpty
-                            ? items.length
-                            : timeZones.length,
+                        itemCount: filteredTimeZones.length,
                         itemBuilder: (BuildContext context, int index) {
                           return Padding(
                             padding: const EdgeInsets.symmetric(
@@ -109,13 +164,9 @@ class _ChooseLocationState extends State<ChooseLocation> {
                             child: Card(
                               child: ListTile(
                                 onTap: () {
-                                  updateTime(editingController.text.isNotEmpty
-                                      ? items[index]
-                                      : timeZones[index]);
+                                  updateTime(filteredTimeZones[index]);
                                 },
-                                title: Text(editingController.text.isNotEmpty
-                                    ? items[index]
-                                    : timeZones[index]),
+                                title: Text(filteredTimeZones[index]),
                               ),
                             ),
                           );

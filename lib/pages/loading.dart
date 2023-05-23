@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:world_time/blocs/world_time_list/world_time_list_bloc.dart';
 import 'package:world_time/services/world_time.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Loading extends StatefulWidget {
-  const Loading({Key? key}) : super(key: key);
+  Loading({Key? key}) : super(key: key);
 
   @override
   State<Loading> createState() => _LoadingState();
 }
 
 class _LoadingState extends State<Loading> {
+  var instance = WorldTime();
   void setupWorldTime() async {
     await instance.getTime();
     Navigator.pushReplacementNamed(context, '/home', arguments: {
@@ -21,8 +24,10 @@ class _LoadingState extends State<Loading> {
 
   @override
   void initState() {
-    super.initState();
     setupWorldTime();
+
+    print(context.read<WorldTimeListBloc>().state.timeData);
+    super.initState();
   }
 
   @override
