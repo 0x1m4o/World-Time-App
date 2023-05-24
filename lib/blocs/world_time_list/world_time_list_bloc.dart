@@ -15,7 +15,7 @@ class WorldTimeListBloc extends Bloc<WorlTimeListEvent, WorldTimeListState> {
     on<FetchWorldTimeList>((event, emit) async {
       final apiUrl = Uri.parse('http://localhost:3000/api/timezone');
 
-      final response = await http.get(apiUrl);
+      final response = await http.get(apiUrl, headers: {});
       print('Response ${response.statusCode}');
       if (response.statusCode == 200) {
         List<dynamic> timeData = json.decode(response.body);
