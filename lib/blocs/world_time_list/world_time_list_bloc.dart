@@ -13,6 +13,7 @@ part 'world_time_list_state.dart';
 class WorldTimeListBloc extends Bloc<WorlTimeListEvent, WorldTimeListState> {
   WorldTimeListBloc() : super(WorldTimeListState.initial()) {
     on<FetchWorldTimeList>((event, emit) async {
+      // set the api/timezone as endpoint
       final apiUrl =
           Uri.parse('https://world-time-app-nine.vercel.app/api/timezone');
 
