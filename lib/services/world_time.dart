@@ -19,7 +19,13 @@ class WorldTime {
 
     try {
       var response = await http.get(apiUrl, headers: {
-        HttpHeaders.authorizationHeader: "Jqt4v5pnSiqUM9lAF2sPRC0Z",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
+        "Access-Control-Allow-Headers":
+            "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+        "Access-Control-Max-Age": "600"
+        // HttpHeaders.authorizationHeader: "Jqt4v5pnSiqUM9lAF2sPRC0Z",
         // "key": "Access-Control-Allow-Origin", "value": "*"
         // "Content-Type": "application/json", 'Accept': 'application/json',
         // "Authorization": "Jqt4v5pnSiqUM9lAF2sPRC0Z",
