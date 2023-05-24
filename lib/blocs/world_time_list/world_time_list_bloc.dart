@@ -15,23 +15,7 @@ class WorldTimeListBloc extends Bloc<WorlTimeListEvent, WorldTimeListState> {
     on<FetchWorldTimeList>((event, emit) async {
       final apiUrl = Uri.parse('http://localhost:3000/api/timezone');
 
-      final response = await http.get(apiUrl
-
-          // headers:
-          // {"Access-Control-Allow-Origin": "*"}
-          // {
-          // HttpHeaders.authorizationHeader: "Jqt4v5pnSiqUM9lAF2sPRC0Z",
-
-          // "Content-Type": "application/json",
-          // "Access-Control-Allow-Origin": "*"
-          //  "Access-Control-Allow-Origin", "value": "*"
-          //   "Access-Control-Allow-Origin": "*",
-          //   "Access-Control-Allow-Credentials": "true",
-          //   "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
-          //   "Access-Control-Allow-Headers":
-          //       "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
-          // }
-          );
+      final response = await http.get(apiUrl);
       print('Response ${response.statusCode}');
       if (response.statusCode == 200) {
         List<dynamic> timeData = json.decode(response.body);

@@ -14,23 +14,11 @@ class WorldTime {
   WorldTime({this.url = 'Asia/Jakarta'});
 
   Future<void> getTime() async {
-    Uri apiUrl = Uri.parse('http://localhost:3000/api/time');
+    Uri apiUrl = Uri.parse('http://localhost:3000/api/time?timeZone=$url');
 
     try {
       var response = await http.get(
         apiUrl,
-        // headers: {
-        // "Access-Control-Allow-Origin": "*",
-        // "Access-Control-Allow-Credentials": "true",
-        // "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
-        // "Access-Control-Allow-Headers":
-        //     "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
-        // HttpHeaders.authorizationHeader: "Jqt4v5pnSiqUM9lAF2sPRC0Z",
-        // "key": "Access-Control-Allow-Origin", "value": "*"
-        // "Content-Type": "application/json", 'Accept': 'application/json',
-        // "Authorization": "Jqt4v5pnSiqUM9lAF2sPRC0Z",
-        // "Access-Control-Allow-Origin": "*"
-        // }
       );
       var data = json.decode(response.body);
       print(data);
