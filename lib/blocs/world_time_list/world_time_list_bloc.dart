@@ -11,10 +11,10 @@ part 'world_time_list_state.dart';
 class WorldTimeListBloc extends Bloc<WorlTimeListEvent, WorldTimeListState> {
   WorldTimeListBloc() : super(WorldTimeListState.initial()) {
     on<FetchWorldTimeList>((event, emit) async {
-      final apiUrl =
-          Uri.parse('https://timeapi.io/api/TimeZone/AvailableTimeZones');
+      final apiUrl = Uri.parse('http://localhost:3000/api/timezones');
 
-      final response = await http.get(apiUrl, headers: {"Access-Control-Allow-Origin": "*"});
+      final response =
+          await http.get(apiUrl, headers: {"Access-Control-Allow-Origin": "*"});
       print('Response ${response.statusCode}');
       if (response.statusCode == 200) {
         List<dynamic> timeData = json.decode(response.body);
