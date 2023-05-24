@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
@@ -17,8 +19,11 @@ class WorldTime {
 
     try {
       var response = await http.get(apiUrl, headers: {
+        HttpHeaders.authorizationHeader: "Jqt4v5pnSiqUM9lAF2sPRC0Z",
         // "key": "Access-Control-Allow-Origin", "value": "*"
-        "Access-Control-Allow-Origin": "*"
+        // "Content-Type": "application/json", 'Accept': 'application/json',
+        // "Authorization": "Jqt4v5pnSiqUM9lAF2sPRC0Z",
+        // "Access-Control-Allow-Origin": "*"
       });
       var data = json.decode(response.body);
       print(data);

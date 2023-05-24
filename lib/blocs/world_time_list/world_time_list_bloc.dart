@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:world_time/data/models/time_data.dart';
@@ -17,7 +19,10 @@ class WorldTimeListBloc extends Bloc<WorlTimeListEvent, WorldTimeListState> {
       final response = await http.get(apiUrl, headers:
           // {"Access-Control-Allow-Origin": "*"}
           {
-        "Access-Control-Allow-Origin": "*"
+        HttpHeaders.authorizationHeader: "Jqt4v5pnSiqUM9lAF2sPRC0Z",
+
+        // "Content-Type": "application/json",
+        // "Access-Control-Allow-Origin": "*"
         // "key": "Access-Control-Allow-Origin", "value": "*"
         // 'Access-Control-Allow-Origin': '*',
         // 'Access-Control-Allow-Credentials': 'true',
