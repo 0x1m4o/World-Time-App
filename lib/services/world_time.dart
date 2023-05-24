@@ -15,8 +15,11 @@ class WorldTime {
     Uri apiUrl = Uri.parse('http://localhost:3000/api/time');
 
     try {
-      var response =
-          await http.get(apiUrl, headers: {"Access-Control-Allow-Origin": "*"});
+      var response = await http.get(apiUrl, headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers':
+            'authorization, content-type, x-client-info, apikey',
+      });
       var data = json.decode(response.body);
       print(data);
       print(response.statusCode);
