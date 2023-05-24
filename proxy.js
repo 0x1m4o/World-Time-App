@@ -1,27 +1,26 @@
+const express = require("express");
 const axios = require("axios");
 
-module.exports = async (req, res) => {
-  const { timeZone } = req.query;
-  const apiUrl = `https://timeapi.io/api/Time/current/zone?timeZone=${encodeURIComponent(
-    timeZone
-  )}`;
-  const availableTimeZonesUrl =
-    "https://timeapi.io/api/TimeZone/AvailableTimeZones";
+const app = express();
 
-  try {
-    let response;
+const apiUrl = "https://timeapi.io/api/Time/current/zone";
+const availableTimeZonesUrl =
+  "https://timeapi.io/api/TimeZone/AvailableTimeZones";
 
-    if (req.url.startsWith("/api/time")) {
-      response = await axios.get(apiUrl);
-    } else if (req.url.startsWith("/api/timezone")) {
-      response = await axios.get(availableTimeZonesUrl);
-    } else {
-      // Invalid URL
-      res.status(400).json({ error: "Invalid URL" });
+app.use((req, res) => {
+  const requestedUrl = req.path;
+
+  if (requestedUrl === "/api/time") {
+    const timeZone = req.query.timeZone;
+
+    if (!timeZone) {
+      res.status(400).json({ error: "Missing timeZone query parameter" });
       return;
     }
 
-    // Set CORS headers
+    const url = `${apiUrl}?timeZone=${encodeURIComponent(timeZone)}`;
+
+    // Set the necessary CORS headers
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader(
       "Access-Control-Allow-Methods",
@@ -32,10 +31,43 @@ module.exports = async (req, res) => {
       "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
     );
 
-    // Forward the response from the API server to the client
-    res.status(response.status).json(response.data);
-  } catch (error) {
-    // Handle errors
-    res.status(500).json({ error: "Internal Server Error" });
+    // Proxy the request to the requested URL
+    axios
+      .get(url)
+      .then((response) => {
+        res.send(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+      });
+  } else if (requestedUrl === "/api/timezone") {
+    // Set the necessary CORS headers
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET,OPTIONS,PATCH,DELETE,POST,PUT"
+    );
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
+    );
+
+    // Proxy the request to the available time zones URL
+    axios
+      .get(availableTimeZonesUrl)
+      .then((response) => {
+        res.send(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+      });
+  } else {
+    res.status(400).json({ error: "Invalid URL" });
   }
-};
+});
+
+app.listen(3000, () => {
+  console.log("Proxy server listening on port 3000");
+});
