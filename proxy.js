@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
       return;
     }
 
-    // Forward the response from the API server to the client
+    // Set CORS headers
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader(
       "Access-Control-Allow-Methods",
@@ -32,6 +32,7 @@ module.exports = async (req, res) => {
       "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
     );
 
+    // Forward the response from the API server to the client
     res.status(response.status).json(response.data);
   } catch (error) {
     // Handle errors
