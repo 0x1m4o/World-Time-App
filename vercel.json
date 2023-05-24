@@ -22,6 +22,10 @@
     {
       "source": "/api/(.*)",
       "destination": "https://world-time-app-nine.vercel.app/api/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "https://world-time-app-nine.vercel.app/"
     }
   ]
 }
