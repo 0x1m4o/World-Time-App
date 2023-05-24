@@ -13,8 +13,7 @@ part 'world_time_list_state.dart';
 class WorldTimeListBloc extends Bloc<WorlTimeListEvent, WorldTimeListState> {
   WorldTimeListBloc() : super(WorldTimeListState.initial()) {
     on<FetchWorldTimeList>((event, emit) async {
-      final apiUrl =
-          Uri.parse('http://localhost:3000/api/timezone');
+      final apiUrl = Uri.parse('http://localhost:3000/api/timezone');
 
       final response = await http.get(apiUrl, headers:
           // {"Access-Control-Allow-Origin": "*"}
@@ -29,7 +28,6 @@ class WorldTimeListBloc extends Bloc<WorlTimeListEvent, WorldTimeListState> {
         "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
         "Access-Control-Allow-Headers":
             "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
-        "Access-Control-Max-Age": "600"
       });
       print('Response ${response.statusCode}');
       if (response.statusCode == 200) {

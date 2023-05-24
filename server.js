@@ -1,5 +1,5 @@
 const express = require("express");
-const request = require("request");
+const axios = require("axios");
 
 const app = express();
 
@@ -30,7 +30,15 @@ app.use((req, res) => {
   );
 
   // Proxy the request to the requested URL
-  req.pipe(request(url)).pipe(res);
+  axios
+    .get(url)
+    .then((response) => {
+      res.send(response.data);
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    });
 });
 
 app.listen(3000, () => {
