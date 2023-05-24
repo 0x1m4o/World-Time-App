@@ -17,7 +17,8 @@ class WorldTimeListBloc extends Bloc<WorlTimeListEvent, WorldTimeListState> {
       final response = await http.get(apiUrl, headers:
           // {"Access-Control-Allow-Origin": "*"}
           {
-        "key": "Access-Control-Allow-Origin", "value": "*"
+        "Access-Control-Allow-Origin": "*"
+        // "key": "Access-Control-Allow-Origin", "value": "*"
         // 'Access-Control-Allow-Origin': '*',
         // 'Access-Control-Allow-Credentials': 'true',
         // 'Access-Control-Allow-Methods': 'GET,OPTIONS,PATCH,DELETE,POST,PUT',

@@ -16,8 +16,10 @@ class WorldTime {
         'https://timeapi.io/api/Time/current/zone?timeZone=Asia/Jakarta');
 
     try {
-      var response = await http.get(apiUrl,
-          headers: {"key": "Access-Control-Allow-Origin", "value": "*"});
+      var response = await http.get(apiUrl, headers: {
+        // "key": "Access-Control-Allow-Origin", "value": "*"
+        "Access-Control-Allow-Origin": "*"
+      });
       var data = json.decode(response.body);
       print(data);
       print(response.statusCode);
