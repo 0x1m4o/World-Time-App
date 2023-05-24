@@ -11,8 +11,7 @@ part 'world_time_list_state.dart';
 class WorldTimeListBloc extends Bloc<WorlTimeListEvent, WorldTimeListState> {
   WorldTimeListBloc() : super(WorldTimeListState.initial()) {
     on<FetchWorldTimeList>((event, emit) async {
-      final apiUrl =
-          Uri.parse('https://timeapi.io/api/TimeZone/AvailableTimeZones');
+      final apiUrl = Uri.parse('https://worldtimeapi.org/api/timezone');
 
       final response = await http.get(apiUrl, headers:
           // {"Access-Control-Allow-Origin": "*"}
