@@ -17,11 +17,12 @@ class WorldTimeListBloc extends Bloc<WorlTimeListEvent, WorldTimeListState> {
       final response = await http.get(apiUrl, headers:
           // {"Access-Control-Allow-Origin": "*"}
           {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Credentials': 'true',
-        'Access-Control-Allow-Methods': 'GET,OPTIONS,PATCH,DELETE,POST,PUT',
-        'Access-Control-Allow-Headers':
-            'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
+        "key": "Access-Control-Allow-Origin", "value": "*"
+        // 'Access-Control-Allow-Origin': '*',
+        // 'Access-Control-Allow-Credentials': 'true',
+        // 'Access-Control-Allow-Methods': 'GET,OPTIONS,PATCH,DELETE,POST,PUT',
+        // 'Access-Control-Allow-Headers':
+        //     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
       });
       print('Response ${response.statusCode}');
       if (response.statusCode == 200) {
