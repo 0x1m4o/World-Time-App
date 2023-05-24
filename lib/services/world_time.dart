@@ -14,8 +14,7 @@ class WorldTime {
   WorldTime({this.url = 'Asia/Jakarta'});
 
   Future<void> getTime() async {
-    Uri apiUrl = Uri.parse(
-        'https://timeapi.io/api/Time/current/zone?timeZone=Asia/Jakarta');
+    Uri apiUrl = Uri.parse('http://worldtimeapi.org/api/timezone/$url');
 
     try {
       var response = await http.get(apiUrl, headers: {
