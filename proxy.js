@@ -11,9 +11,9 @@ module.exports = async (req, res) => {
   try {
     let response;
 
-    if (req.url.includes("/api/time")) {
+    if (req.url.startsWith("/api/time")) {
       response = await axios.get(apiUrl);
-    } else if (req.url.includes("/api/timezone")) {
+    } else if (req.url.startsWith("/api/timezone")) {
       response = await axios.get(availableTimeZonesUrl);
     } else {
       // Invalid URL
