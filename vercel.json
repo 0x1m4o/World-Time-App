@@ -1,4 +1,7 @@
 {
+  "version": 2,
+  "name": "world-time",
+  "builds": [{ "src": "app.js", "use": "@vercel/node" }],
   "headers": [
     {
       "source": "/(.*)",
