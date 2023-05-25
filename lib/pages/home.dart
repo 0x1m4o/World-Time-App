@@ -16,6 +16,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Homepage'),
         centerTitle: true,
         backgroundColor: Colors.blue[900],
