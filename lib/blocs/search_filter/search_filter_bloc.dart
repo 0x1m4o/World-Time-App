@@ -60,7 +60,7 @@ class SearchFilterBloc extends Bloc<SearchFilterEvent, SearchFilterState> {
       case Filter.antartica:
         // We filter out the todo that do not completed
         filteredList = worldTimeListBloc.state.timeData
-            .where((value) => value.contains('Antartica'))
+            .where((value) => value.contains('Antarctica'))
             .toList();
 
         break;
