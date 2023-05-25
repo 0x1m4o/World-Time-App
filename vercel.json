@@ -1,43 +1,8 @@
 {
-  "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "build/web",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "api/timezone.dart",
-      "use": "@vercel/edge-functions",
-      "config": {
-        "edge": {
-          "forwardingRoutes": [
-            {
-              "src": "/api/timezone",
-              "dest": "/api/timezone"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "src": "api/time.dart",
-      "use": "@vercel/edge-functions",
-      "config": {
-        "edge": {
-          "forwardingRoutes": [
-            {
-              "src": "/api/time",
-              "dest": "/api/time"
-            }
-          ]
-        }
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/api/(.*)",
+      "destination": "https://timeapi.io/api/$1"
     }
   ]
 }

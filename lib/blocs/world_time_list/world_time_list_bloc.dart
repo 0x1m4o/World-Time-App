@@ -14,8 +14,8 @@ class WorldTimeListBloc extends Bloc<WorlTimeListEvent, WorldTimeListState> {
   WorldTimeListBloc() : super(WorldTimeListState.initial()) {
     on<FetchWorldTimeList>((event, emit) async {
       // set the api/timezone as endpoint
-      final apiUrl =
-          Uri.parse('https://world-time-app-0x1m4o.vercel.app/api/timezone');
+      final apiUrl = Uri.parse(
+          'https://world-time-app-0x1m4o.vercel.app/api/TimeZone/AvailableTimeZones');
 
       final response = await http.get(apiUrl, headers: {});
       print('Response ${response.statusCode}');
