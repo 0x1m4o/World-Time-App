@@ -1,12 +1,15 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Router;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:world_time/blocs/search_filter/search_filter_bloc.dart';
 import 'package:world_time/blocs/world_time_list/world_time_list_bloc.dart';
 import 'package:world_time/pages/choose_location.dart';
 import 'package:world_time/pages/home.dart';
 import 'package:world_time/pages/loading.dart';
+import 'package:shelf/shelf.dart' as shelf;
+import 'package:shelf/shelf_io.dart' as io;
+import 'package:shelf_router/shelf_router.dart';
 import 'package:http/http.dart' as http;
 
 void main() {
@@ -26,102 +29,67 @@ void main() {
         '/': (context) => Loading(),
         '/home': (context) => Home(),
         '/location': (context) => ChooseLocation(),
-        '/api/time': (context) => ApiTimeHandler(),
-        '/api/timezone': (context) =>
-            ApiTimeZoneHandler(), // New route handler for /api/timezone
       },
     ),
   ));
+  final router = _router();
+
+  final handler = const shelf.Pipeline()
+      .addMiddleware(shelf.logRequests())
+      .addHandler(router);
+
+  io.serve(handler, 'localhost', 3000);
 }
 
-class ApiTimeHandler extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final Map<String, dynamic> params =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+Router _router() {
+  final router = Router();
 
-    final String? timeZone = params['timeZone'];
+  router.get('/api/time', (shelf.Request request) async {
+    final timeZone = request.url.queryParameters['timeZone'] ?? 'Asia/Jakarta';
+    final apiUrl =
+        'https://timeapi.io/api/Time/current/zone?timeZone=$timeZone';
 
-    if (timeZone == null) {
-      return Scaffold(
-        body: Center(
-          child: Text('Missing timeZone query parameter'),
-        ),
-      );
-    }
-
-    return Scaffold(
-      body: Center(
-        child: FutureBuilder(
-          future: fetchTimeData(timeZone),
-          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else {
-              return Text('Time Data: ${snapshot.data}');
-            }
-          },
-        ),
-      ),
-    );
-  }
-
-  Future<String> fetchTimeData(String timeZone) async {
-    final url = 'https://timeapi.io/api/Time/current/zone?timeZone=$timeZone';
-
-    final response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
       final data = json.decode(response.body);
-      return data['dateTime'];
-    } else {
-      throw Exception('Failed to fetch time data');
+
+      if (response.statusCode == 200) {
+        final dateTime = data['date_time'];
+        final hour = data['hour'];
+        final isDayTime = hour > 6 && hour < 20;
+
+        final timeData = {
+          'dateTime': dateTime,
+          'hour': hour,
+          'isDayTime': isDayTime,
+        };
+
+        return shelf.Response.ok(json.encode(timeData),
+            headers: {'Content-Type': 'application/json'});
+      }
+    } catch (e) {
+      print('Error: $e');
     }
-  }
-}
 
-class ApiTimeZoneHandler extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: FutureBuilder(
-          future: fetchTimeZones(),
-          builder:
-              (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else {
-              final timeZones = snapshot.data;
-              return ListView.builder(
-                itemCount: timeZones!.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    title: Text(timeZones[index]),
-                  );
-                },
-              );
-            }
-          },
-        ),
-      ),
-    );
-  }
+    return shelf.Response.internalServerError();
+  });
 
-  Future<List<String>> fetchTimeZones() async {
-    final url = 'https://timeapi.io/api/TimeZone/AvailableTimeZones';
+  router.get('/api/timezone', (shelf.Request request) async {
+    final apiUrl = 'https://timeapi.io/api/TimeZone/AvailableTimeZones';
 
-    final response = await http.get(Uri.parse(url));
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return List<String>.from(data);
-    } else {
-      throw Exception('Failed to fetch time zones');
+      if (response.statusCode == 200) {
+        return shelf.Response.ok(response.body,
+            headers: {'Content-Type': 'application/json'});
+      }
+    } catch (e) {
+      print('Error: $e');
     }
-  }
+
+    return shelf.Response.internalServerError();
+  });
+
+  return router;
 }
