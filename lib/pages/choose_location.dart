@@ -91,7 +91,7 @@ class _ChooseLocationState extends State<ChooseLocation> {
                           prefixIcon: Icon(Icons.search),
                           border: OutlineInputBorder(
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(25.0)))),
+                                  BorderRadius.all(Radius.circular(10)))),
                     ),
                   ),
                   Padding(
@@ -101,69 +101,77 @@ class _ChooseLocationState extends State<ChooseLocation> {
                       child: DropdownButtonHideUnderline(
                         child: ButtonTheme(
                           alignedDropdown: true,
-                          child: DropdownButton(
-                            alignment: Alignment.center,
-                            value: (searchfilter.state.filter == Filter.all)
-                                ? 'all'
-                                : (searchfilter.state.filter == Filter.africa)
-                                    ? 'africa'
-                                    : (searchfilter.state.filter ==
-                                            Filter.america)
-                                        ? 'america'
-                                        : (searchfilter.state.filter ==
-                                                Filter.antartica)
-                                            ? 'antartica'
-                                            : (searchfilter.state.filter ==
-                                                    Filter.asia)
-                                                ? 'asia'
-                                                : (searchfilter.state.filter ==
-                                                        Filter.australia)
-                                                    ? 'australia'
-                                                    : 'europe',
-                            // Step 4.
-                            items: [
-                              'all',
-                              'asia',
-                              'africa',
-                              'america',
-                              'antartica',
-                              'australia',
-                              'europe'
-                            ].map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(
-                                  value,
-                                  style: TextStyle(fontSize: 17),
-                                ),
-                              );
-                            }).toList(),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: Colors.grey)),
+                            child: DropdownButton(
+                              borderRadius: BorderRadius.circular(10),
+                              alignment: Alignment.center,
+                              value: (searchfilter.state.filter == Filter.all)
+                                  ? 'All'
+                                  : (searchfilter.state.filter == Filter.africa)
+                                      ? 'Africa'
+                                      : (searchfilter.state.filter ==
+                                              Filter.america)
+                                          ? 'America'
+                                          : (searchfilter.state.filter ==
+                                                  Filter.antartica)
+                                              ? 'Antartica'
+                                              : (searchfilter.state.filter ==
+                                                      Filter.asia)
+                                                  ? 'Asia'
+                                                  : (searchfilter
+                                                              .state.filter ==
+                                                          Filter.australia)
+                                                      ? 'Australia'
+                                                      : 'Europe',
+                              // Step 4.
+                              items: [
+                                'All',
+                                'Asia',
+                                'Africa',
+                                'America',
+                                'Antartica',
+                                'Australia',
+                                'Europe'
+                              ].map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(
+                                    value,
+                                    style: TextStyle(fontSize: 17),
+                                  ),
+                                );
+                              }).toList(),
 
-                            // Step 5.
-                            onChanged: (value) {
-                              Filter filter;
-                              if (value == 'all') {
-                                filter = Filter.all;
-                              } else if (value == 'africa') {
-                                filter = Filter.africa;
-                              } else if (value == 'america') {
-                                filter = Filter.america;
-                              } else if (value == 'antartica') {
-                                filter = Filter.antartica;
-                              } else if (value == 'asia') {
-                                filter = Filter.asia;
-                              } else if (value == 'australia') {
-                                filter = Filter.australia;
-                              } else {
-                                filter = Filter.europe;
-                              }
+                              // Step 5.
+                              onChanged: (value) {
+                                Filter filter;
+                                if (value == 'All') {
+                                  filter = Filter.all;
+                                } else if (value == 'Africa') {
+                                  filter = Filter.africa;
+                                } else if (value == 'America') {
+                                  filter = Filter.america;
+                                } else if (value == 'Antartica') {
+                                  filter = Filter.antartica;
+                                } else if (value == 'Asia') {
+                                  filter = Filter.asia;
+                                } else if (value == 'Australia') {
+                                  filter = Filter.australia;
+                                } else {
+                                  filter = Filter.europe;
+                                }
 
-                              searchfilter.state.filter = filter;
-                              context
-                                  .read<SearchFilterBloc>()
-                                  .setFilterAndSearch(searchfilter.state.filter,
-                                      editingController.text);
-                            },
+                                searchfilter.state.filter = filter;
+                                context
+                                    .read<SearchFilterBloc>()
+                                    .setFilterAndSearch(
+                                        searchfilter.state.filter,
+                                        editingController.text);
+                              },
+                            ),
                           ),
                         ),
                       ),
