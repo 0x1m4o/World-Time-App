@@ -32,64 +32,57 @@ void main() {
       },
     ),
   ));
-  final router = _router();
+  final router = Router();
+  router.get('/api/time', _handleTimeRequest);
+  router.get('/api/timezone', _handleTimezoneRequest);
 
-  final handler = const shelf.Pipeline()
-      .addMiddleware(shelf.logRequests())
-      .addHandler(router);
+  final handler = shelf.Cascade().add(router).handler;
 
   io.serve(handler, 'localhost', 3000);
 }
 
-Router _router() {
-  final router = Router();
+Future<shelf.Response> _handleTimeRequest(shelf.Request request) async {
+  final timeZone = request.url.queryParameters['timeZone'] ?? 'Asia/Jakarta';
+  final apiUrl = 'https://timeapi.io/api/Time/current/zone?timeZone=$timeZone';
 
-  router.get('/api/time', (shelf.Request request) async {
-    final timeZone = request.url.queryParameters['timeZone'] ?? 'Asia/Jakarta';
-    final apiUrl =
-        'https://timeapi.io/api/Time/current/zone?timeZone=$timeZone';
+  try {
+    final response = await http.get(Uri.parse(apiUrl));
+    final data = json.decode(response.body);
 
-    try {
-      final response = await http.get(Uri.parse(apiUrl));
-      final data = json.decode(response.body);
+    if (response.statusCode == 200) {
+      final dateTime = data['date_time'];
+      final hour = data['hour'];
+      final isDayTime = hour > 6 && hour < 20;
 
-      if (response.statusCode == 200) {
-        final dateTime = data['date_time'];
-        final hour = data['hour'];
-        final isDayTime = hour > 6 && hour < 20;
+      final timeData = {
+        'dateTime': dateTime,
+        'hour': hour,
+        'isDayTime': isDayTime,
+      };
 
-        final timeData = {
-          'dateTime': dateTime,
-          'hour': hour,
-          'isDayTime': isDayTime,
-        };
-
-        return shelf.Response.ok(json.encode(timeData),
-            headers: {'Content-Type': 'application/json'});
-      }
-    } catch (e) {
-      print('Error: $e');
+      return shelf.Response.ok(json.encode(timeData),
+          headers: {'Content-Type': 'application/json'});
     }
+  } catch (e) {
+    print('Error: $e');
+  }
 
-    return shelf.Response.internalServerError();
-  });
+  return shelf.Response.internalServerError();
+}
 
-  router.get('/api/timezone', (shelf.Request request) async {
-    final apiUrl = 'https://timeapi.io/api/TimeZone/AvailableTimeZones';
+Future<shelf.Response> _handleTimezoneRequest(shelf.Request request) async {
+  final apiUrl = 'https://timeapi.io/api/TimeZone/AvailableTimeZones';
 
-    try {
-      final response = await http.get(Uri.parse(apiUrl));
+  try {
+    final response = await http.get(Uri.parse(apiUrl));
 
-      if (response.statusCode == 200) {
-        return shelf.Response.ok(response.body,
-            headers: {'Content-Type': 'application/json'});
-      }
-    } catch (e) {
-      print('Error: $e');
+    if (response.statusCode == 200) {
+      return shelf.Response.ok(response.body,
+          headers: {'Content-Type': 'application/json'});
     }
+  } catch (e) {
+    print('Error: $e');
+  }
 
-    return shelf.Response.internalServerError();
-  });
-
-  return router;
+  return shelf.Response.internalServerError();
 }
