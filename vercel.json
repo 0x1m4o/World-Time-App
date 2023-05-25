@@ -1,6 +1,43 @@
 {
-  "rewrites": [
-    { "source": "/api/:path*", "destination": "/api/:path*" },
-    { "source": "/:path*", "destination": "/:path*" }
+  "version": 2,
+  "builds": [
+    {
+      "src": "build/web",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "api/timezone.dart",
+      "use": "@vercel/edge-functions",
+      "config": {
+        "edge": {
+          "forwardingRoutes": [
+            {
+              "src": "/api/timezone",
+              "dest": "/api/timezone"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "src": "api/time.dart",
+      "use": "@vercel/edge-functions",
+      "config": {
+        "edge": {
+          "forwardingRoutes": [
+            {
+              "src": "/api/time",
+              "dest": "/api/time"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
   ]
 }
